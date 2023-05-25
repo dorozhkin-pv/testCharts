@@ -1,24 +1,64 @@
-import logo from './logo.svg';
-import './App.css';
+import { useForm } from 'react-hook-form';
+import { CustomActiveShapePieChart } from './components/CustomActiveShapePieChart';
+import { useMemo, useState } from 'react';
+import { SimpleBarChart } from './components/SimpleBarChart';
+import * as SC from './styled';
+
+const convertData = (text) => {
+  if (!text) return;
+
+  const map = new Map();
+  let res = [];
+
+  text.split('').forEach((el) => {
+    map.set(el !== ' ' ? el : 'Пробел', (map.get(el) ?? 0) + 1);
+  });
+
+  map.forEach((value, name) => {
+    res.push({
+      name,
+      value,
+    });
+  });
+
+  return res;
+};
 
 function App() {
+  const [text, setText] = useState('');
+
+  const { handleSubmit, register, reset } = useForm();
+
+  const onSubmit = (data) => {
+    if (!data) return;
+
+    setText(data.text);
+    reset();
+  };
+
+  const data = useMemo(() => convertData(text), [text]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <SC.Container>
+      <h1>Введите текст</h1>
+      <h4>Узнайте количество вхождений каждой буквы</h4>
+
+      <SC.StyledForm onSubmit={handleSubmit(onSubmit)}>
+        <SC.StyledInput {...register('text')} />
+      </SC.StyledForm>
+
+      {data && (
+        <SC.ChartsContainer>
+          <SC.ChartItem>
+            <CustomActiveShapePieChart data={data} />
+          </SC.ChartItem>
+
+          <SC.ChartItem>
+            <SimpleBarChart data={data} />
+          </SC.ChartItem>
+        </SC.ChartsContainer>
+      )}
+    </SC.Container>
   );
 }
 
