@@ -11,7 +11,8 @@ const convertData = (text) => {
   let res = [];
 
   text.split('').forEach((el) => {
-    map.set(el !== ' ' ? el : 'Пробел', (map.get(el) ?? 0) + 1);
+    const element = el !== ' ' ? el : 'Пробел';
+    map.set(element, (map.get(element) ?? 0) + 1);
   });
 
   map.forEach((value, name) => {
